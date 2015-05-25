@@ -166,85 +166,23 @@ public class ChannelService {
 		try {
 			User user = dao.findFirst(User.class, selectSql,phone);
 			if(user!=null){
-					
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return  isoReq;
-	}
-	/**
-	 * 图片
-	 * */
-	 public ISOMsg graphicsGeneration(ISOMsg isoReq) {
-		 String merchantNo = isoReq.getString(42);
-		 try {
-			 String sql = "SELECT * FROM HATCHET_MERCHANT WHERE MERCHANT_NO=? ";
-			 HatchetMerchant merchant = dao.findFirst(HatchetMerchant.class,sql,new Object[]{merchantNo});
-			 String terminalVoucherNo = isoReq.getString(11);
-			String acqRefNo = isoReq.getString(37);
-			String orderSql = "select * from HATCHET_ORDER_PAYMENT where ACQ_REF_NO=? and TERMINAL_VOUCHER_NO =?";
-			HatchetOrderPayment orderPayMent = dao.findFirst(HatchetOrderPayment.class, orderSql, new Object[]{acqRefNo,terminalVoucherNo});
-			if(orderPayMent!=null){
-				String orderImageSql = "SELECT * FROM HATCHET_ORDER_PAYMENT_IMAGE WHERE order_payment_id=? AND type='10D'";
-				HatchetOrderPaymentImage orderImage = dao.findFirst(HatchetOrderPaymentImage.class, orderImageSql,orderPayMent.getId());
-				String orderNo=orderPayMent.getOrderNo();
-				BufferedImage image;  
-				 int imageWidth = 300;//图片的宽度
-			        int imageHeight = 400;//图片的高度
-			        image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
-			        Graphics graphics = image.getGraphics();
-			        graphics.setColor(Color.WHITE);
-			        graphics.fillRect(0, 0, imageWidth, imageHeight);
-			        graphics.setColor(Color.BLACK);
-			        Font mf = new Font("SansSerif",10,15);
-			        graphics.setFont(mf);
-			        graphics.drawString("商户编号  : " + merchantNo, 20, 30);
-			        graphics.drawString("年龄  : " + 0, 20, 50);
-			        graphics.drawString("性别  : " + "男", 20, 70);
-			        graphics.drawString("毕业院校  : " + 0, 20, 90);
-			        graphics.drawString("爱好  : " + "吃饭喝酒睡觉觉", 20, 110);
-			        graphics.drawString("最爱  : " + "工作", 20, 130);
-			        ImageIcon imageIcon = new ImageIcon(orderImage.getImageUrl());
-			        graphics.drawImage(imageIcon.getImage(), 0, 250, null);
-			        	String uuid = com.hatchet.utils.lang.StringUtils.randomUUID();
-			        	InputStream fis = null;
-			        	File uploadFile = new File(orderImage.getImageUrl());
-			        	URL url = new URL(orderImage.getImageUrl());
-			        	URLConnection uc = url.openConnection(); 
-			        	fis = uc.getInputStream(); 
-			        	FtpArgs args = propertiesService.getImageFtpArgs();
-			        	FtpUtil ftp = new FtpUtil(args);
-						ftp.upload("orderpayment_image/" + orderNo, uuid + "." + "jpg",fis);
-						HatchetOrderPaymentImage orderPaymentImage = new HatchetOrderPaymentImage();
-						orderPaymentImage.setId(uuid);
-						orderPaymentImage.setType("10E");
-						orderPaymentImage.setCreateTime(new Date());
-						orderPaymentImage.setImageUrl("http://" + args.webHost + ":" + args.webPort + args.path + "/orderpayment_image/" + orderNo + "/" + uuid + "." + "jpg");
-						orderPaymentImage.setOrderPaymentId(orderPayMent.getId());
-						String insertImage = "insert into HATCHET_ORDER_PAYMENT_IMAGE(id,image_url,order_payment_id,type,create_user_id,create_time)values(?,?,?,?,?,?)";
-						dao.update(insertImage,new Object[]{orderPaymentImage.getId(),orderPaymentImage.getOrderPaymentId(),orderPaymentImage.getOrderPaymentId(),orderPaymentImage.getType(),orderPaymentImage.getCreateUserId(),orderPaymentImage.getCreateTime()});
-						URL url1 = new URL(orderPaymentImage.getImageUrl());
-			        	URLConnection uc1 = url1.openConnection();  
-			        	uc1.setDoOutput(true);
-			        	OutputStream ops = uc1.getOutputStream();
-						BufferedOutputStream bos = new BufferedOutputStream(ops);
-/*						FileOutputStream fos = new FileOutputStream("F:/2.jpg");
-			            BufferedOutputStream bos1 = new BufferedOutputStream(fos);
-			            JPEGImageEncoder encoder1 = JPEGCodec.createJPEGEncoder(bos1);
-			            encoder1.encode(image);
-			            bos1.close();*/
-			        	 JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(bos);
-			        	 encoder.encode(image);
-			        	 bos.close();
-			        	 isoReq.set(39,"00");
+					String userProductSql = "insert into USER_PRODUCT(id,user_id,product_id,status,create_time) values(?,?,?,?,?)";
+					UserProduct userProduct = new UserProduct();
+					userProduct.setCreateTime(new Date());
+					userProduct.setId(com.hatchet.utils.lang.StringUtils.randomUUID());
+					userProduct.setProductId(productId);
+					userProduct.setStatus("10A");
+					userProduct.setUserId(user.getId());
+					dao.update(userProductSql, new Object[]{userProduct.getId(),userProduct.getUserId(),userProduct.getProductId(),userProduct.getStatus(),userProduct.getCreateTime()});
+					isoReq.set(39,"00");
+			}else{
+				isoReq.set(39,"ZZ");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		 return isoReq;
-	 	} 
-
+		return  isoReq;
+	}
 	
 	/**
 	 * 转换isoRes
@@ -260,30 +198,4 @@ public class ChannelService {
 		}
 		return res;
 	}
-	
-	/**
-	 * 校验MAC
-	 * @param isoRes
-	 * @return
-	 */
-	public boolean validateMACMD5(String sdata,String smac){
-        String mac = DigestUtils.md5Hex(sdata+"21E4ACD4CD5D4619B063F40C5A454F7D");
-        if(null!=smac && mac.toUpperCase().equals(smac.toUpperCase())){
-			return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * 生成商户编号后四位
-	 * */
-	public String getMerchantNo(String phone){
-		Date date = new Date();
-		SimpleDateFormat sdf  = new SimpleDateFormat("yyMM");
-	    String randomNum= StringUtils.leftPad(RandomUtils.nextInt(9999)+"", 4, "0");
-	    String merchantNo= "220"+phone.subSequence(3, 7)+sdf.format(date)+randomNum;
-	    return merchantNo;
-	}	
 }
-
-
