@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="GBK" ?>
+
+<!DOCTYPE sqlMapConfig      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+	<settings cacheModelsEnabled="true" enhancementEnabled="true"
+		lazyLoadingEnabled="true" errorTracingEnabled="true" maxRequests="5120"
+		maxSessions="300" maxTransactions="256" useStatementNamespaces="true"/>
+		
+  <sqlMap resource="ibatis/sqlmap-mysql-sql.xml"/><!-- 根据数据库不同，选择对应的XML -->
+  
+  
+  <sqlMap resource="com/immy/model/SYSTEM.xml"/>
+  
+  <sqlMap resource="com/immy/mapper/product_SqlMap.xml.xml"/>
+  <sqlMap resource="com/immy/mapper/product_type_SqlMap.xml"/>
+  <sqlMap resource="com/immy/mapper/user_SqlMap.xml"/>
+  <sqlMap resource="com/immy/mapper/user_product_SqlMap.xml"/>
+  </sqlMapConfig>    

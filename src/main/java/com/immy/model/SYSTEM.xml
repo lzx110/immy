@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SYSTEM">
+	<!-- selectBySql -->
+	<select id="selectBySqlPage" resultClass="java.util.HashMap" remapResults="true" parameterClass="java.util.HashMap">
+		<include refid="SQLMAP-COMMON-SQL.page_begin" />
+		<isNotEmpty property="sql">$sql$</isNotEmpty>
+		<include refid="SQLMAP-COMMON-SQL.page_end" />
+	</select>
+	<select id="selectBySql" resultClass="java.util.HashMap" remapResults="true" parameterClass="java.util.HashMap">
+		<isNotEmpty property="sql">$sql$</isNotEmpty>
+	</select>
+	<select id="selectBySqlCount" resultClass="java.lang.Integer" parameterClass="java.util.HashMap">
+		<isNotEmpty property="sql">$sql$</isNotEmpty>
+	</select>
+	<!-- updateBySql -->
+	<update id="updateBySql" parameterClass="java.util.HashMap">
+		<isNotEmpty property="sql">$sql$</isNotEmpty>
+	</update>
+	<delete id="deleteBySql" parameterClass="java.util.HashMap">
+		<isNotEmpty property="sql">$sql$</isNotEmpty>
+	</delete>
+
+</sqlMap>

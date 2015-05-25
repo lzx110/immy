@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE ibatorConfiguration PUBLIC "-//Apache Software Foundation//DTD Apache iBATIS Ibator Configuration 1.0//EN" "http://ibatis.apache.org/dtd/ibator-config_1_0.dtd" >
+<ibatorConfiguration >
+<classPathEntry location="E:\localRepository\mysql\mysql-connector-java\5.0.5\mysql-connector-java-5.0.5.jar" />
+  <ibatorContext id="context1" >
+    <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://192.168.1.200:3306/test" userId="root" password="root" />
+    <javaModelGenerator targetPackage="com.immy.beans" targetProject="immy/src/main/java" />
+    <sqlMapGenerator targetPackage="com.immy.mapper" targetProject="immy/src/main/java" />
+    <daoGenerator targetPackage="com.immy.dao" targetProject="immy/src/main/java" type="SPRING" />
+    <table  tableName="PRODUCT" modelType="flat"></table>
+    <table  tableName="PRODUCT_TYPE" modelType="flat"></table>
+    <table  tableName="USER" modelType="flat"></table>
+    <table  tableName="USER_PRODUCT" modelType="flat"></table>
+  </ibatorContext>
+</ibatorConfiguration>

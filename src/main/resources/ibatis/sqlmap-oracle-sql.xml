@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="SQLMAP-COMMON-SQL">
+
+	<sql id="page_begin">
+		<isNotEmpty property="begin">
+			select *  from (select t.*, rownum RN from (
+		</isNotEmpty>	
+	</sql>
+	
+	<sql id="page_end">
+		<isNotEmpty property="end">
+		<![CDATA[
+		   ) t where rownum <= #end#) where rn >= #begin#
+		]]>
+		</isNotEmpty>
+	</sql>
+</sqlMap>
+
+  
+	
+	
+ 
+
+   
+
+
+
